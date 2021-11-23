@@ -913,16 +913,22 @@ bool ThermostatClimate::supplemental_heating_required_() {
 void ThermostatClimate::change_away_(bool away) {
   if (!away) {
     if (this->supports_two_points_) {
-      this->target_temperature_low = this->normal_config_.default_temperature_low;
-      this->target_temperature_high = this->normal_config_.default_temperature_high;
+      this->away_config_.temperature_low = this->target_temperature_low;
+      this->away_config_.temperature_high = this->target_temperature_high;
+      this->target_temperature_low = std::isnan(this->normal_config_.temperature_low) ? this->normal_config_.default_temperature_low : this->normal_config_.temperature_low;
+      this->target_temperature_high = std::isnan(this->normal_config_.temperature_high) ? this->normal_config_.default_temperature_high : this->normal_config_.temperature_high;
     } else
-      this->target_temperature = this->normal_config_.default_temperature;
+      this->away_config_.temperature = this->target_temperature;
+      this->target_temperature = std::isnan(this->normal_config_.temperature) ? this->normal_config_.default_temperature : this->normal_config_.temperature;
   } else {
     if (this->supports_two_points_) {
-      this->target_temperature_low = this->away_config_.default_temperature_low;
-      this->target_temperature_high = this->away_config_.default_temperature_high;
+      this->normal_config_.temperature_low = this->target_temperature_low;
+      this->normal_config_.temperature_high = this->target_temperature_high;
+      this->target_temperature_low = std::isnan(this->away_config_.temperature_low) ? this->away_config_.default_temperature_low : this->away_config_.temperature_low;
+      this->target_temperature_high = std::isnan(this->away_config_.temperature_high) ? this->away_config_.default_temperature_high : this->away_config_.temperature_high;
     } else
-      this->target_temperature = this->away_config_.default_temperature;
+      this->normal_config_.temperature = this->target_temperature;
+      this->target_temperature = std::isnan(this->away_config_.temperature) ? this->away_config_.default_temperature : this->away_config_.temperature;
   }
   this->preset = away ? climate::CLIMATE_PRESET_AWAY : climate::CLIMATE_PRESET_HOME;
 }
